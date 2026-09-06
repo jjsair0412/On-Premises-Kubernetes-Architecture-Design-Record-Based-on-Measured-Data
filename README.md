@@ -1,6 +1,6 @@
 # On-Premises K8s Cluster Best Architecture
 
-## 목차
+## 목차 (Contents)
 1. [OverView](#overview)
 2. [Design 정책 (Design Principles)](#design-principles)
 3. [Environment](#environment)
