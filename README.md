@@ -1,13 +1,14 @@
-# On-Premises K8s Cluster Best Architecture
+# On-Premises Kubernetes Architecture Design Record Based on Measured Data
+온프레미스 K8s Cluster 아키텍처를 선정하며, 각 계층 별 실측치를 기록합니다.
 
 ## 목차 (Contents)
 1. [OverView](#overview)
 2. [Design 정책 (Design Principles)](#design-principles)
 3. [Environment](#environment)
 4. [Architecture Diagram](#architecture-diagram)
-6. [실측 필요 항목 (Items Requiring On-Site Measurement)](#실측-필요-항목-items-requiring-on-site-measurement)
-7. [Contributing](#contributing)
-8. [References](#references)
+5. [실측 필요 항목 (Items Requiring On-Site Measurement)](#실측-필요-항목-items-requiring-on-site-measurement)
+6. [Contributing](#contributing)
+7. [References](#references)
 
 ## OverView
 
@@ -28,14 +29,7 @@ Ansible 기반으로 코드화 하였으며, PR, Issue, Fork 모두 허용하며
 모든 솔루션의 고 가용성 확보를 위해, 실제 상면 Rack 별 Work Node 위치를 파악합니다.
 공통 Rack에 모든 Ingress Traffic이 관리되거나, harbor와 같은 Image Registry가 위치할 경우 문제 발생 시 전체 장애로 이어질 수 있기 때문입니다.
 
-어느 노드가 어느 렉에 있는지 파악하고, 라벨링 합니다. 이는 Affinity 정책에 사용됩니다.
-> **English :** To ensure high availability across all solutions, we identify the physical rack location of each Work Node. 
->
-> If all Ingress traffic is managed within a single shared rack, or if critical components such as Harbor are concentrated in the same rack, a failure in that rack could potentially lead to a system-wide outage.
->
->Therefore, we identify which rack each node is physically located in and apply appropriate labels to the nodes. These labels are then used to define Affinity and Anti-Affinity policies, ensuring that critical workloads are distributed across different racks and reducing the risk of a single point of failure.
 
-### **1. 상단 L4의 backend를 노드 수와 분리한다.**
 전 노드 NodePort를 타겟으로 잡으면 워커를 늘릴 때마다 L4 정책이 늘어납니다. LoadBalancer + LB IPAM + BGP 광고로 바꾸면 backend가 VIP 개수로 고정됩니다.
 > **English :** Decouple the upstream L4 backend count from the node count. Targeting NodePorts on every node means L4 config grows every time you add a worker. Using `LoadBalancer` + Cilium LB IPAM + BGP advertisement pins the backend list to the number of VIPs instead.
 
